@@ -1,0 +1,13 @@
+# dependencies
+node_modules/
+
+# env
+.env
+
+# data
+../data/*.db
+../data/vectorstore/
+
+# OS
+Thumbs.db
+.DS_Store
