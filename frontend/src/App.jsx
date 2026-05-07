@@ -7,6 +7,7 @@ import Chat from './pages/Chat.jsx';
 import Onboarding from './pages/Onboarding.jsx';
 import TeamView from './pages/TeamView.jsx';
 import AdminPanel from './pages/AdminPanel.jsx';
+import SkillsGap from './pages/SkillsGap.jsx';
 import './index.css';
 
 // ── Auth Context ──
@@ -76,6 +77,9 @@ function Sidebar() {
         <NavLink to="/onboarding" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>
           <span className="nav-link-icon">📋</span> Onboarding
         </NavLink>
+        <NavLink to="/skills" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>
+          <span className="nav-link-icon">📊</span> Skills
+        </NavLink>
         {isManager && (
           <>
             <NavLink to="/dashboard" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>
@@ -126,6 +130,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/chat" element={<ProtectedRoute><AppLayout><Chat /></AppLayout></ProtectedRoute>} />
           <Route path="/onboarding" element={<ProtectedRoute><AppLayout><Onboarding /></AppLayout></ProtectedRoute>} />
+          <Route path="/skills" element={<ProtectedRoute><AppLayout><SkillsGap /></AppLayout></ProtectedRoute>} />
           <Route path="/dashboard" element={
             <ProtectedRoute roles={['admin','hr','manager','team_lead']}>
               <AppLayout><Dashboard /></AppLayout>

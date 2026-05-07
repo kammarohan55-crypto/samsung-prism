@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { run, newId, getAll, getOne, saveDb } from '../db/db.js';
 import { authenticate, tenantGuard } from '../middleware/auth.js';
+import { chatInputSanitizer } from '../middleware/security.js';
 import { classifyIntent, generateResponse } from '../services/gemini.js';
 import { ragAnswer } from '../services/rag.js';
 
@@ -11,7 +12,7 @@ router.use(authenticate, tenantGuard);
  * POST /api/chat/message — Send a message to the AI assistant
  * Routes through Gemini-powered intent classification → worker delegation
  */
-router.post('/message', async (req, res) => {
+router.post('/message', chatInputSanitizer, async (req, res) => {
   try {
     const { message, thread_id } = req.body;
     if (!message) return res.status(400).json({ error: 'Message is required' });

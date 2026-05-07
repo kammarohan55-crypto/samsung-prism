@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { initDb } from './db/db.js';
 import { initVectorStore, ingestDocuments } from './services/rag.js';
+import { securityHeaders, rateLimiter } from './middleware/security.js';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { mkdirSync } from 'fs';
@@ -14,6 +15,7 @@ import analyticsRoutes from './routes/analytics.js';
 import chatRoutes from './routes/chat.js';
 import telemetryRoutes from './routes/telemetry.js';
 import signalsRoutes from './routes/signals.js';
+import intelligenceRoutes from './routes/intelligence.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const BASE = join(__dirname, '..', '..');
@@ -41,26 +43,29 @@ if (process.env.GEMINI_API_KEY) {
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
+// ── Security Middleware (applied globally) ──
+app.use(securityHeaders);
 app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:5173', credentials: true }));
 app.use(express.json({ limit: '10mb' }));
-app.use((req, res, next) => { res.removeHeader('X-Powered-By'); next(); });
 
-// Health
+// ── Health (public) ──
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', version: '2.0.0', ai: !!process.env.GEMINI_API_KEY, timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', version: '2.1.0', ai: !!process.env.GEMINI_API_KEY, timestamp: new Date().toISOString() });
 });
 
-// Routes
-app.use('/api/auth', authRoutes);
+// ── Rate-limited auth routes ──
+app.use('/api/auth', rateLimiter, authRoutes);
+
+// ── Protected routes ──
 app.use('/api/users', userRoutes);
 app.use('/api/onboarding', onboardingRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/telemetry', telemetryRoutes);
 app.use('/api/signals', signalsRoutes);
+app.use('/api/intelligence', intelligenceRoutes);
 
-// Error handler
+// ── Global error handler ──
 app.use((err, req, res, _next) => {
   console.error('[server error]', err);
   res.status(500).json({ error: 'Internal server error' });
@@ -69,7 +74,8 @@ app.use((err, req, res, _next) => {
 app.listen(PORT, () => {
   console.log(`[ITIS] Server running on http://localhost:${PORT}`);
   console.log(`[ITIS] AI: ${process.env.GEMINI_API_KEY ? 'Gemini enabled' : 'No API key (fallback mode)'}`);
-  console.log(`[ITIS] Routes: auth, users, onboarding, analytics, chat, telemetry, signals`);
+  console.log(`[ITIS] Routes: auth, users, onboarding, analytics, chat, telemetry, signals, intelligence`);
+  console.log(`[ITIS] Security: headers, rate limiting, prompt injection detection`);
 });
 
 export default app;

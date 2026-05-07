@@ -61,6 +61,11 @@ class ApiClient {
   // Signals
   getAlerts() { return this.request('/signals/alerts'); }
   getHealthScores() { return this.request('/signals/health'); }
+
+  // Intelligence
+  getSkillsGap(userId) { return this.request(`/intelligence/skills-gap/${userId}`); }
+  getRecommendations(userId) { return this.request(`/intelligence/recommendations/${userId}`); }
+  getTimeToProductivity() { return this.request('/intelligence/time-to-productivity'); }
 }
 
 export const api = new ApiClient();
