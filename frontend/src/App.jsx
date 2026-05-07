@@ -5,6 +5,8 @@ import Login from './pages/Login.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Chat from './pages/Chat.jsx';
 import Onboarding from './pages/Onboarding.jsx';
+import TeamView from './pages/TeamView.jsx';
+import AdminPanel from './pages/AdminPanel.jsx';
 import './index.css';
 
 // ── Auth Context ──
@@ -54,6 +56,7 @@ function Sidebar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const isManager = ['admin', 'hr', 'manager', 'team_lead'].includes(user?.role);
+  const isAdmin = user?.role === 'admin';
 
   const handleLogout = () => { logout(); navigate('/login'); };
 
@@ -64,6 +67,7 @@ function Sidebar() {
           <div className="sidebar-logo-icon">⚡</div>
           <span className="sidebar-logo-text">ITIS</span>
         </div>
+        <div style={{fontSize:'0.6rem',color:'var(--text-muted)',marginTop:'0.25rem',paddingLeft:'0.5rem',letterSpacing:'0.05em'}}>TEAM INTELLIGENCE</div>
       </div>
       <nav className="sidebar-nav">
         <NavLink to="/chat" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>
@@ -73,8 +77,18 @@ function Sidebar() {
           <span className="nav-link-icon">📋</span> Onboarding
         </NavLink>
         {isManager && (
-          <NavLink to="/dashboard" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>
-            <span className="nav-link-icon">📊</span> Dashboard
+          <>
+            <NavLink to="/dashboard" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>
+              <span className="nav-link-icon">📊</span> Dashboard
+            </NavLink>
+            <NavLink to="/team" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>
+              <span className="nav-link-icon">👥</span> Team
+            </NavLink>
+          </>
+        )}
+        {isAdmin && (
+          <NavLink to="/admin" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>
+            <span className="nav-link-icon">⚙️</span> Admin
           </NavLink>
         )}
       </nav>
@@ -115,6 +129,16 @@ function App() {
           <Route path="/dashboard" element={
             <ProtectedRoute roles={['admin','hr','manager','team_lead']}>
               <AppLayout><Dashboard /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/team" element={
+            <ProtectedRoute roles={['admin','hr','manager','team_lead']}>
+              <AppLayout><TeamView /></AppLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/admin" element={
+            <ProtectedRoute roles={['admin']}>
+              <AppLayout><AdminPanel /></AppLayout>
             </ProtectedRoute>
           } />
           <Route path="*" element={<Navigate to="/chat" />} />

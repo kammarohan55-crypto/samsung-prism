@@ -12,6 +12,8 @@ import userRoutes from './routes/users.js';
 import onboardingRoutes from './routes/onboarding.js';
 import analyticsRoutes from './routes/analytics.js';
 import chatRoutes from './routes/chat.js';
+import telemetryRoutes from './routes/telemetry.js';
+import signalsRoutes from './routes/signals.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const BASE = join(__dirname, '..', '..');
@@ -46,7 +48,7 @@ app.use((req, res, next) => { res.removeHeader('X-Powered-By'); next(); });
 
 // Health
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', version: '1.0.0', ai: !!process.env.GEMINI_API_KEY, timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', version: '2.0.0', ai: !!process.env.GEMINI_API_KEY, timestamp: new Date().toISOString() });
 });
 
 // Routes
@@ -55,6 +57,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/onboarding', onboardingRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/telemetry', telemetryRoutes);
+app.use('/api/signals', signalsRoutes);
 
 // Error handler
 app.use((err, req, res, _next) => {
@@ -64,7 +68,8 @@ app.use((err, req, res, _next) => {
 
 app.listen(PORT, () => {
   console.log(`[ITIS] Server running on http://localhost:${PORT}`);
-  console.log(`[ITIS] AI: ${process.env.GEMINI_API_KEY ? 'Gemini enabled' : 'No API key'}`);
+  console.log(`[ITIS] AI: ${process.env.GEMINI_API_KEY ? 'Gemini enabled' : 'No API key (fallback mode)'}`);
+  console.log(`[ITIS] Routes: auth, users, onboarding, analytics, chat, telemetry, signals`);
 });
 
 export default app;
