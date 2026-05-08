@@ -7,7 +7,7 @@
 - **Orchestration**: OpenClaw gateway with orchestrator + 4 domain workers
 - **Knowledge**: RAG pipeline with LanceDB vector store and citation-grounded answers
 - **Telemetry**: Normalized event ingestion from GitHub, Jira, Calendar, Slack
-- **Dashboard**: React-based role-specific analytics views
+- **Dashboard**: React-based particular-role analytics views
 - **Security**: RBAC, tenant isolation, audit logging, secret protection
 
 ## Quick Start
